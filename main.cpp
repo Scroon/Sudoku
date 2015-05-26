@@ -19,17 +19,6 @@ std::string ConvertIntToString(int i){
     return s;
 }
 
-class kbtn : public exitBTN{
-private:
-    bool rdy;
-public:
-    kbtn(const int posx, const int posy, const int sizex, const int sizey, bool IsFrame, application *parent, std::string value, std::string ID) : exitBTN(posx,posy,sizex,sizey,IsFrame,parent,value,ID) {}
-    void action(){
-
-    }
-
-};
-
 class elbtn : public exitBTN{
 private:
     bool ellenorzes=false;
@@ -48,7 +37,6 @@ public:
             if(IsFrame) gout<<move_to(px-2,py-2)<<color(100,100,100)<<box(sx+4,sy+4);
             gout<<move_to(px,py)<<color(10,10,10)<<box(sx,sy);
         }
-
         gout<<move_to(px+(sx/2-gout.twidth(value)/2),py+15)<<color(255,255,255)<<text(value);
     }
 };
@@ -105,7 +93,6 @@ public:
             if(num==0)value="";
             else value=ConvertIntToString(num);
             draw();
-
         }
         if(e.button==btn_wheelup && IsInFocus && !fix){
             num++;
@@ -132,11 +119,11 @@ public:
 class sudoku : public application{
 protected:
     std::ifstream f;
+    btn* BTN;
     btn* s[9][9];
     btn* o[9][9];
     btn* b[9][9];
     int sor,seged;
-    btn* BTN;
     bool rdy;
 public:
     sudoku(int windowX,int windowY,bool fullscreen) : application(windowX,windowY,fullscreen){
@@ -177,7 +164,6 @@ public:
                             if(b[i][j]->reval()==b[i][k]->reval() && b[i][k]->reval()!="" && b[i][k]->reval()!=""){
                                 b[i][j]->warn=true;
                                 b[i][k]->warn=true;
-
                             }
                         }
                     }
@@ -214,11 +200,9 @@ public:
     }
 };
 
-
 int main()
 {
     srand(time(NULL));
-
     sudoku MyApp(500,300,false);
     MyApp.run();
     return 0;
