@@ -19,6 +19,17 @@ std::string ConvertIntToString(int i){
     return s;
 }
 
+class kbtn : public exitBTN{
+private:
+    bool rdy;
+public:
+    kbtn(const int posx, const int posy, const int sizex, const int sizey, bool IsFrame, application *parent, std::string value, std::string ID) : exitBTN(posx,posy,sizex,sizey,IsFrame,parent,value,ID) {}
+    void action(){
+
+    }
+
+};
+
 class elbtn : public exitBTN{
 private:
     bool ellenorzes=false;
@@ -27,6 +38,18 @@ public:
     void action(){
         ellenorzes=!ellenorzes;
         app->action(ellenorzes);
+    }
+    void draw(){
+        if(IsInFocus || ellenorzes){
+            if(IsFrame) gout<<move_to(px-2,py-2)<<color(255,100,0)<<box(sx+4,sy+4);
+            gout<<move_to(px,py)<<color(10,10,10)<<box(sx,sy);
+        }
+        else{
+            if(IsFrame) gout<<move_to(px-2,py-2)<<color(100,100,100)<<box(sx+4,sy+4);
+            gout<<move_to(px,py)<<color(10,10,10)<<box(sx,sy);
+        }
+
+        gout<<move_to(px+(sx/2-gout.twidth(value)/2),py+15)<<color(255,255,255)<<text(value);
     }
 };
 
@@ -40,6 +63,9 @@ public:
     void action(){
         num++;
         if(num>9)num=0;
+    }
+    void befix(){
+        fix=true;
     }
     void draw(){
         if (warn && !IsInFocus && !fix){
@@ -111,8 +137,11 @@ protected:
     btn* b[9][9];
     int sor,seged;
     btn* BTN;
+    bool rdy;
 public:
-    sudoku(int windowX,int windowY,bool fullscreen,int sor) : application(windowX,windowY,fullscreen), sor(sor){
+    sudoku(int windowX,int windowY,bool fullscreen) : application(windowX,windowY,fullscreen){
+
+        sor=9;
         f.open("sudoku9.txt");
 
         new elbtn(windowX-150,windowY-140,100,20,true,this,"Ellenorzes","ellen");
@@ -148,10 +177,22 @@ public:
                             if(b[i][j]->reval()==b[i][k]->reval() && b[i][k]->reval()!="" && b[i][k]->reval()!=""){
                                 b[i][j]->warn=true;
                                 b[i][k]->warn=true;
+
                             }
                         }
                     }
                 }
+            }
+            for(int i=0; i<9; i++){
+                for(int j=0; j<9; j++){
+                    if(s[i][j]->reval()=="" || o[i][j]->reval()=="" || b[i][j]->reval()=="" || s[i][j]->warn==true || o[i][j]->warn==true || b[i][j]->warn==true)
+                    {
+                        rdy=false;
+                        break;
+                    }
+                    else rdy=true;
+                }
+                if(!rdy) break;
             }
         }
         if(!bo){
@@ -163,6 +204,13 @@ public:
                 }
             }
         }
+        if(rdy){
+            for(int i=0; i<9; i++){
+                for(int j=0; j<9; j++){
+                    b[i][j]->befix();
+                }
+            }
+        }
     }
 };
 
@@ -171,7 +219,7 @@ int main()
 {
     srand(time(NULL));
 
-    sudoku MyApp(1600,900,true,9);
+    sudoku MyApp(500,300,false);
     MyApp.run();
     return 0;
 }
